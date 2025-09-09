@@ -195,12 +195,13 @@ void URagdollSyncComponent::ServerTickUpdate()
 
 	if (AActor* OwnerActor = GetOwner())
 	{
-		if (bAnyDirty)
+		if (bAnyDirty && OwnerActor->NetDormancy == DORM_DormantAll)
 		{
 			GetWorld()->GetTimerManager().ClearTimer(DormantTimer);
+			OwnerActor->SetNetDormancy(DORM_Awake);
 			OwnerActor->FlushNetDormancy();
 		}
-		else
+		else if (!bAnyDirty && OwnerActor->NetDormancy != DORM_DormantAll)
 		{
 			GetWorld()->GetTimerManager().SetTimer(DormantTimer, [OwnerActor]
 			{
